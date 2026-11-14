@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -11,25 +10,146 @@ from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 )
 from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import inch
 
 
-# --------------------------------------------------
 # PAGE CONFIGURATION
-# --------------------------------------------------
-
 st.set_page_config(
     page_title="AI Database Data Quality Analyzer",
     page_icon="🔍",
     layout="wide"
 )
 
-st.title("🔍 AI-Based Database Data-Quality Analyzer")
-st.caption(
-    "Oracle Database + Python Machine Learning + Isolation Forest"
-)
 
+# VISUAL THEME
+st.markdown("""
+<style>
+    :root {
+        --ink: #172033;
+        --muted: #64748b;
+        --line: #e5eaf2;
+        --surface: #ffffff;
+        --soft: #f5f7fb;
+        --accent: #3157a4;
+    }
+
+    .stApp {
+        background: linear-gradient(180deg, #f7f9fd 0%, #ffffff 42%);
+        color: var(--ink);
+    }
+
+    [data-testid="stHeader"] {
+        background: rgba(247, 249, 253, 0.88);
+    }
+
+    [data-testid="stSidebar"] {
+        background: #101a2d;
+    }
+
+    [data-testid="stSidebar"] * {
+        color: #edf3ff !important;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stRadio"] label {
+        padding: 0.35rem 0.2rem;
+    }
+
+    .hero {
+        padding: 1.35rem 1.55rem;
+        border-radius: 18px;
+        background: linear-gradient(
+            120deg, #142747 0%, #294f91 62%, #3b6bb5 100%
+        );
+        color: white;
+        margin: 0.25rem 0 1.35rem 0;
+        box-shadow: 0 12px 28px rgba(25, 48, 88, 0.14);
+    }
+
+    .hero h1 {
+        color: white !important;
+        font-size: clamp(1.55rem, 3vw, 2.25rem);
+        margin: 0 0 0.35rem 0;
+        letter-spacing: -0.03em;
+    }
+
+    .hero p {
+        color: #dce8ff !important;
+        margin: 0;
+        font-size: 0.98rem;
+    }
+
+    h1, h2, h3 {
+        letter-spacing: -0.025em;
+    }
+
+    h2 {
+        color: #172b4d;
+    }
+
+    [data-testid="stMetric"] {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 0.9rem 1rem;
+        box-shadow: 0 4px 14px rgba(24, 43, 77, 0.045);
+    }
+
+    [data-testid="stMetricLabel"] {
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    [data-testid="stMetricValue"] {
+        color: #172b4d;
+        font-weight: 750;
+    }
+
+    [data-testid="stDataFrame"], [data-testid="stTable"] {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    div.stButton > button,
+    div.stDownloadButton > button {
+        border-radius: 10px;
+        font-weight: 650;
+        border: 1px solid #cbd7eb;
+    }
+
+    div.stDownloadButton > button {
+        background: #f1f5fc;
+        color: #1f3f78;
+    }
+
+    hr {
+        border-color: var(--line);
+    }
+
+    .section-note {
+        color: #64748b;
+        margin-top: -0.45rem;
+        margin-bottom: 1rem;
+        font-size: 0.92rem;
+    }
+
+    footer {
+        visibility: hidden;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+
+st.markdown("""
+<div class="hero">
+    <h1>AI-Based Database Data-Quality Analyzer</h1>
+    <p>Oracle Database · SQL / PL-SQL · Python · Isolation Forest</p>
+</div>
+""", unsafe_allow_html=True)
+
+
+# NAVIGATION
 st.sidebar.title("Navigation")
+
 page = st.sidebar.radio(
     "Choose Section",
     [
@@ -43,10 +163,7 @@ page = st.sidebar.radio(
 )
 
 
-# --------------------------------------------------
 # LOAD PROJECT DATA
-# --------------------------------------------------
-
 @st.cache_data
 def load_data():
 
@@ -90,10 +207,7 @@ except Exception as e:
     st.stop()
 
 
-# --------------------------------------------------
 # PREPARE DATA
-# --------------------------------------------------
-
 analysis.columns = analysis.columns.str.upper()
 summary.columns = summary.columns.str.upper()
 ml_report.columns = ml_report.columns.str.upper()
@@ -117,6 +231,8 @@ analysis["DETECTED_ISSUES"] = (
 
 ml_report["ML_RESULT"] = ml_report["ML_RESULT"].fillna("Unknown")
 
+
+# CALCULATE METRICS
 total_students = len(analysis)
 
 missing_emails = int(
@@ -159,9 +275,7 @@ normal_records = int(
 oracle_issues = len(oracle_report)
 
 
-# --------------------------------------------------
-# DASHBOARD
-# --------------------------------------------------
+# PDF REPORT FUNCTION
 def create_pdf():
 
     buffer = BytesIO()
@@ -191,9 +305,7 @@ def create_pdf():
     ))
 
     elements.append(Paragraph(
-        "Generated on: " + datetime.now().strftime(
-            "%d-%m-%Y %H:%M"
-        ),
+        "Generated on: " + datetime.now().strftime("%d-%m-%Y %H:%M"),
         styles["Normal"]
     ))
 
@@ -218,10 +330,7 @@ def create_pdf():
         ["Normal Records", normal_records]
     ]
 
-    summary_table = Table(
-        summary_data,
-        colWidths=[250, 120]
-    )
+    summary_table = Table(summary_data, colWidths=[250, 120])
 
     summary_table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#17365D")),
@@ -245,7 +354,6 @@ def create_pdf():
     ]]
 
     for _, row in analysis.iterrows():
-
         student_data.append([
             str(row["STUDENT_ID"]),
             str(row["NAME"]),
@@ -284,7 +392,6 @@ def create_pdf():
     ]]
 
     for _, row in oracle_report.iterrows():
-
         oracle_data.append([
             str(row.get("ISSUE_ID", "")),
             str(row.get("STUDENT_ID", "")),
@@ -308,7 +415,6 @@ def create_pdf():
     ]))
 
     elements.append(oracle_table)
-
     elements.append(Spacer(1, 18))
 
     elements.append(Paragraph(
@@ -327,19 +433,25 @@ def create_pdf():
     ))
 
     doc.build(elements)
-
     buffer.seek(0)
 
     return buffer.getvalue()
+    
+# ==========================================
+# PAGE 1: DASHBOARD
+# ==========================================
+
 if page == "Dashboard":
 
-    st.header("Project Dashboard")
+    st.subheader("Project Dashboard")
 
-    st.write(
-        "Overview of database quality checks and "
-        "machine-learning anomaly detection."
+    st.markdown(
+        '<p class="section-note">A quick overview of database '
+        'quality checks and machine-learning results.</p>',
+        unsafe_allow_html=True
     )
 
+    # MAIN METRICS
     col1, col2, col3, col4 = st.columns(4)
 
     col1.metric("Total Students", total_students)
@@ -347,213 +459,431 @@ if page == "Dashboard":
     col3.metric("ML Anomalies", ml_anomalies)
     col4.metric("Critical Records", critical_records)
 
+    st.write("")
+
+    # QUALITY METRICS
+    col5, col6, col7, col8 = st.columns(4)
+
+    col5.metric("Missing Emails", missing_emails)
+    col6.metric("Duplicate Records", duplicate_records)
+    col7.metric("Invalid Marks", invalid_marks)
+    col8.metric("Invalid Attendance", invalid_attendance)
+
+    st.write("")
+
+    st.markdown(
+        f"**Record classification:** "
+        f"🔴 Critical: {critical_records}  |  "
+        f"🟠 Warning: {warning_records}  |  "
+        f"🟢 Normal: {normal_records}"
+    )
+
     st.divider()
 
+    # CHARTS
     st.subheader("Data Quality Overview")
 
-    col1, col2, col3, col4 = st.columns(4)
+    chart_col1, chart_col2 = st.columns(2)
 
-    col1.metric("Missing Emails", missing_emails)
-    col2.metric("Duplicate Records", duplicate_records)
-    col3.metric("Invalid Marks", invalid_marks)
-    col4.metric("Invalid Attendance", invalid_attendance)
+    with chart_col1:
 
-    st.divider()
+        st.markdown("**Student Record Classification**")
 
-    left, right = st.columns(2)
-
-    with left:
-        st.subheader("Student Classification")
-
-        status_counts = analysis[
-            "SUSPICIOUS_STATUS"
-        ].value_counts()
-
-        st.bar_chart(status_counts)
-
-    with right:
-        st.subheader("Data Quality Issues")
-
-        issue_data = pd.Series({
-            "Missing Emails": missing_emails,
-            "Duplicate Records": duplicate_records,
-            "Invalid Marks": invalid_marks,
-            "Invalid Attendance": invalid_attendance
+        status_data = pd.DataFrame({
+            "Status": ["Critical", "Warning", "Normal"],
+            "Students": [
+                critical_records,
+                warning_records,
+                normal_records
+            ]
         })
 
-        st.bar_chart(issue_data)
+        fig, ax = plt.subplots(figsize=(7, 4))
+
+        ax.bar(
+            status_data["Status"],
+            status_data["Students"]
+        )
+
+        ax.set_ylabel("Number of Students")
+        ax.set_title("Classification of Student Records")
+        ax.grid(axis="y", alpha=0.25)
+
+        st.pyplot(fig)
+        plt.close(fig)
+
+    with chart_col2:
+
+        st.markdown("**Detected Data Quality Issues**")
+
+        issue_data = pd.DataFrame({
+            "Issue": [
+                "Missing Emails",
+                "Duplicates",
+                "Invalid Marks",
+                "Invalid Attendance"
+            ],
+            "Count": [
+                missing_emails,
+                duplicate_records,
+                invalid_marks,
+                invalid_attendance
+            ]
+        })
+
+        fig, ax = plt.subplots(figsize=(7, 4))
+
+        ax.barh(
+            issue_data["Issue"],
+            issue_data["Count"]
+        )
+
+        ax.set_xlabel("Number of Issues")
+        ax.set_title("Oracle Data Quality Checks")
+        ax.grid(axis="x", alpha=0.25)
+
+        st.pyplot(fig)
+        plt.close(fig)
 
     st.divider()
 
-    st.subheader("Student Records Preview")
+    # STUDENT DATA PREVIEW
+    st.subheader("Student Analysis Preview")
+
+    preview_columns = [
+        col for col in [
+            "STUDENT_ID",
+            "NAME",
+            "SUSPICIOUS_STATUS",
+            "DETECTED_ISSUES",
+            "ANOMALY_SCORE"
+        ]
+        if col in analysis.columns
+    ]
 
     st.dataframe(
-        analysis[
-            [
-                "STUDENT_ID",
-                "NAME",
-                "SUSPICIOUS_STATUS",
-                "DETECTED_ISSUES"
-            ]
-        ],
+        analysis[preview_columns],
         use_container_width=True,
+        height=360,
         hide_index=True
     )
 
 
-# --------------------------------------------------
-# STUDENT ANALYSIS
-# --------------------------------------------------
+# ==========================================
+# PAGE 2: STUDENT ANALYSIS
+# ==========================================
 
 elif page == "Student Analysis":
 
-    st.header("Student-Wise Data Quality Analysis")
+    st.subheader("Student-Wise Data Quality Analysis")
 
-    search = st.text_input(
-        "Search by Student ID, Name or Issue"
+    st.markdown(
+        '<p class="section-note">Search student records, filter '
+        'by classification, and inspect detected issues.</p>',
+        unsafe_allow_html=True
     )
 
-    statuses = sorted(
-        analysis["SUSPICIOUS_STATUS"].unique().tolist()
+    # SEARCH
+    search_text = st.text_input(
+        "Search by Student ID or Name",
+        placeholder="Enter student ID or student name..."
     )
 
-    selected_status = st.multiselect(
-        "Filter by Status",
-        statuses,
-        default=statuses
+    # FILTER
+    status_options = ["All"] + sorted(
+        analysis["SUSPICIOUS_STATUS"].dropna().unique().tolist()
     )
 
-    filtered = analysis[
-        analysis["SUSPICIOUS_STATUS"].isin(selected_status)
-    ].copy()
+    selected_status = st.selectbox(
+        "Filter by Classification",
+        status_options
+    )
 
-    if search:
-        search_text = search.strip().lower()
+    filtered_data = analysis.copy()
 
-        mask = (
-            filtered["STUDENT_ID"].astype(str).str.lower()
-            .str.contains(search_text, na=False)
-            |
-            filtered["NAME"].astype(str).str.lower()
-            .str.contains(search_text, na=False)
-            |
-            filtered["DETECTED_ISSUES"].astype(str).str.lower()
-            .str.contains(search_text, na=False)
+    if search_text:
+
+        search_mask = (
+            filtered_data["STUDENT_ID"].astype(str).str.contains(
+                search_text,
+                case=False,
+                na=False
+            )
         )
 
-        filtered = filtered[mask]
+        if "NAME" in filtered_data.columns:
+            search_mask = search_mask | (
+                filtered_data["NAME"].astype(str).str.contains(
+                    search_text,
+                    case=False,
+                    na=False
+                )
+            )
 
-    st.write(f"Records found: **{len(filtered)}**")
+        filtered_data = filtered_data[search_mask]
+
+    if selected_status != "All":
+
+        filtered_data = filtered_data[
+            filtered_data["SUSPICIOUS_STATUS"] == selected_status
+        ]
+
+    st.write(f"**Records found:** {len(filtered_data)}")
+
+    display_columns = [
+        col for col in [
+            "STUDENT_ID",
+            "NAME",
+            "EMAIL",
+            "PHONE",
+            "SUSPICIOUS_STATUS",
+            "DETECTED_ISSUES",
+            "ANOMALY_SCORE"
+        ]
+        if col in filtered_data.columns
+    ]
 
     st.dataframe(
-        filtered,
+        filtered_data[display_columns],
         use_container_width=True,
         hide_index=True
     )
 
     st.divider()
 
-    st.subheader("Individual Student Details")
+    # SELECT A STUDENT
+    st.subheader("View Individual Student Details")
 
-    student_ids = analysis["STUDENT_ID"].dropna().tolist()
+    student_ids = filtered_data["STUDENT_ID"].dropna().tolist()
 
-    selected_id = st.selectbox(
-        "Select Student ID",
-        student_ids
-    )
+    if student_ids:
 
-    student = analysis[
-        analysis["STUDENT_ID"] == selected_id
-    ].iloc[0]
+        selected_student = st.selectbox(
+            "Select Student ID",
+            student_ids
+        )
 
-    st.write(f"### {student['NAME']}")
+        student_record = filtered_data[
+            filtered_data["STUDENT_ID"] == selected_student
+        ]
 
-    col1, col2, col3 = st.columns(3)
+        if not student_record.empty:
 
-    col1.metric("Student ID", int(student["STUDENT_ID"]))
-    col2.metric("Status", student["SUSPICIOUS_STATUS"])
-    col3.metric("Anomaly Score", round(
-        student["ANOMALY_SCORE"], 5
-    ))
+            record = student_record.iloc[0]
 
-    st.write("**Detected Issues:**")
-    st.write(student["DETECTED_ISSUES"])
+            detail_col1, detail_col2 = st.columns(2)
 
-    st.write("**Email:**", student.get("EMAIL", "Not available"))
-    st.write("**Phone:**", student.get("PHONE", "Not available"))
+            with detail_col1:
 
+                st.markdown("**Student Information**")
 
-# --------------------------------------------------
-# ML ANOMALY DETECTION
-# --------------------------------------------------
+                st.write(
+                    "Student ID:",
+                    record.get("STUDENT_ID", "Not available")
+                )
+
+                st.write(
+                    "Name:",
+                    record.get("NAME", "Not available")
+                )
+
+                st.write(
+                    "Email:",
+                    record.get("EMAIL", "Not available")
+                )
+
+                st.write(
+                    "Phone:",
+                    record.get("PHONE", "Not available")
+                )
+
+            with detail_col2:
+
+                st.markdown("**Analysis Results**")
+
+                st.write(
+                    "Classification:",
+                    record.get("SUSPICIOUS_STATUS", "Not available")
+                )
+
+                st.write(
+                    "Detected Issues:",
+                    record.get("DETECTED_ISSUES", "No issues detected")
+                )
+
+                st.write(
+                    "Anomaly Score:",
+                    record.get("ANOMALY_SCORE", "Not available")
+                )
+
+    else:
+
+        st.info("No student records match your search or filter.")
+        
+# ==========================================
+# PAGE 3: ML ANOMALY DETECTION
+# ==========================================
 
 elif page == "ML Anomaly Detection":
 
-    st.header("Isolation Forest Anomaly Detection")
+    st.subheader("Machine Learning Anomaly Detection")
 
-    st.write(
-        "The Isolation Forest model was trained in Google Colab. "
-        "This dashboard displays its saved predictions."
+    st.markdown(
+        '<p class="section-note">Isolation Forest identifies '
+        'unusual student records based on their data patterns.</p>',
+        unsafe_allow_html=True
     )
 
-    anomalies = ml_report[
-        ml_report["ML_RESULT"] == "Anomaly"
-    ].copy()
+    col1, col2, col3 = st.columns(3)
 
-    normal = ml_report[
-        ml_report["ML_RESULT"] == "Normal"
-    ].copy()
-
-    col1, col2 = st.columns(2)
-
-    col1.metric("Anomalies Detected", len(anomalies))
-    col2.metric("Normal Records", len(normal))
-
-    st.subheader("Anomaly Detection Results")
-
-    st.dataframe(
-        ml_report,
-        use_container_width=True,
-        hide_index=True
+    col1.metric("Total ML Anomalies", ml_anomalies)
+    col2.metric("Normal Records", total_students - ml_anomalies)
+    col3.metric(
+        "Anomaly Percentage",
+        f"{(ml_anomalies / total_students * 100):.1f}%"
+        if total_students > 0 else "0%"
     )
 
-    st.subheader("Flagged Anomalies")
+    st.divider()
 
-    st.dataframe(
-        anomalies,
-        use_container_width=True,
-        hide_index=True
+    st.markdown("### ML Anomaly Results")
+
+    if "ML_RESULT" in ml_report.columns:
+
+        anomaly_data = ml_report[
+            ml_report["ML_RESULT"] == "Anomaly"
+        ]
+
+        st.write("**Records identified as anomalies:**")
+
+        st.dataframe(
+            anomaly_data,
+            use_container_width=True,
+            hide_index=True
+        )
+
+        normal_data = ml_report[
+            ml_report["ML_RESULT"] != "Anomaly"
+        ]
+
+        with st.expander("View normal ML records"):
+
+            st.dataframe(
+                normal_data,
+                use_container_width=True,
+                hide_index=True
+            )
+
+    else:
+
+        st.warning(
+            "The ML report does not contain the ML_RESULT column."
+        )
+
+    st.divider()
+
+    # ANOMALY SCORE CHART
+    st.markdown("### Student Anomaly Scores")
+
+    if (
+        "STUDENT_ID" in analysis.columns
+        and "ANOMALY_SCORE" in analysis.columns
+    ):
+
+        score_data = analysis.sort_values(
+            by="ANOMALY_SCORE"
+        )
+
+        fig, ax = plt.subplots(figsize=(11, 5))
+
+        ax.bar(
+            score_data["STUDENT_ID"].astype(str),
+            score_data["ANOMALY_SCORE"]
+        )
+
+        ax.axhline(
+            0,
+            linewidth=1,
+            linestyle="--"
+        )
+
+        ax.set_xlabel("Student ID")
+        ax.set_ylabel("Anomaly Score")
+        ax.set_title("Isolation Forest Anomaly Scores")
+        ax.tick_params(axis="x", rotation=45)
+        ax.grid(axis="y", alpha=0.25)
+
+        st.pyplot(fig)
+        plt.close(fig)
+
+    st.info(
+        "A lower anomaly score indicates a more unusual record. "
+        "An ML anomaly is a record worth investigating; it does "
+        "not automatically mean the data is incorrect."
     )
 
-    st.subheader("Anomaly Score Chart")
 
-    chart_data = ml_report.set_index("NAME")[
-        "ANOMALY_SCORE"
-    ]
-
-    st.bar_chart(chart_data)
-
-    st.caption(
-        "Lower anomaly scores indicate records that the model "
-        "considers more unusual. An anomaly is not automatically "
-        "proof of incorrect data."
-    )
-
-
-# --------------------------------------------------
-# ORACLE QUALITY REPORT
-# --------------------------------------------------
+# ==========================================
+# PAGE 4: ORACLE QUALITY REPORT
+# ==========================================
 
 elif page == "Oracle Quality Report":
 
-    st.header("Oracle SQL / PL-SQL Quality Report")
+    st.subheader("Oracle Database Quality Report")
 
-    st.write(
-        "These issues were detected by the "
-        "ANALYZE_DATA_QUALITY stored procedure."
+    st.markdown(
+        '<p class="section-note">Issues detected using SQL and '
+        'PL/SQL validation rules.</p>',
+        unsafe_allow_html=True
     )
 
-    st.metric("Total Oracle Quality Issues", oracle_issues)
+    st.metric("Total Oracle Issues", oracle_issues)
+
+    st.divider()
+
+    st.markdown("### Issue Type Breakdown")
+
+    if "ISSUE_TYPE" in oracle_report.columns:
+
+        issue_counts = (
+            oracle_report["ISSUE_TYPE"]
+            .fillna("Unknown")
+            .value_counts()
+            .reset_index()
+        )
+
+        issue_counts.columns = ["Issue Type", "Count"]
+
+        col1, col2 = st.columns([1, 1])
+
+        with col1:
+
+            st.dataframe(
+                issue_counts,
+                use_container_width=True,
+                hide_index=True
+            )
+
+        with col2:
+
+            fig, ax = plt.subplots(figsize=(6, 4))
+
+            ax.bar(
+                issue_counts["Issue Type"],
+                issue_counts["Count"]
+            )
+
+            ax.set_ylabel("Number of Issues")
+            ax.set_title("Oracle Issue Distribution")
+            ax.tick_params(axis="x", rotation=30)
+            ax.grid(axis="y", alpha=0.25)
+
+            st.pyplot(fig)
+            plt.close(fig)
+
+    st.divider()
+
+    st.markdown("### Complete Oracle Quality Report")
 
     st.dataframe(
         oracle_report,
@@ -561,141 +891,190 @@ elif page == "Oracle Quality Report":
         hide_index=True
     )
 
-    if "ISSUE_TYPE" in oracle_report.columns:
 
-        st.subheader("Issue Type Breakdown")
-
-        oracle_counts = oracle_report[
-            "ISSUE_TYPE"
-        ].value_counts()
-
-        st.bar_chart(oracle_counts)
-
-
-# --------------------------------------------------
-# PDF REPORT GENERATION
-# --------------------------------------------------
-
-
-
-
-# --------------------------------------------------
-# DOWNLOAD REPORTS
-# --------------------------------------------------
+# ==========================================
+# PAGE 5: DOWNLOAD REPORTS
+# ==========================================
 
 elif page == "Download Reports":
 
-    st.header("Download Project Reports")
+    st.subheader("Download Project Reports")
 
-    st.write(
-        "Download the analysis outputs generated "
-        "by the Google Colab AIML model."
+    st.markdown(
+        '<p class="section-note">Download the analysis results '
+        'and generated project report.</p>',
+        unsafe_allow_html=True
     )
 
-    st.download_button(
-        "Download Complete Analysis CSV",
-        data=analysis.to_csv(index=False).encode("utf-8"),
-        file_name="final_analysis.csv",
-        mime="text/csv",
-        use_container_width=True
-    )
+    st.markdown("### CSV Reports")
 
-    st.download_button(
-        "Download Analysis Summary CSV",
-        data=summary.to_csv(index=False).encode("utf-8"),
-        file_name="analysis_summary.csv",
-        mime="text/csv",
-        use_container_width=True
-    )
+    col1, col2 = st.columns(2)
 
-    st.download_button(
-        "Download ML Anomaly Report CSV",
-        data=ml_report.to_csv(index=False).encode("utf-8"),
-        file_name="ml_anomaly_report.csv",
-        mime="text/csv",
-        use_container_width=True
-    )
-
-    st.download_button(
-        "Download Oracle Quality Report CSV",
-        data=oracle_report.to_csv(index=False).encode("utf-8"),
-        file_name="quality_report.csv",
-        mime="text/csv",
-        use_container_width=True
-    )
-
-    st.divider()
-
-    st.subheader("Complete PDF Analysis Report")
-
-    try:
-        pdf_data = create_pdf()
+    with col1:
 
         st.download_button(
-            "📄 Download Complete PDF Report",
-            data=pdf_data,
-            file_name="Database_Data_Quality_Analysis_Report.pdf",
-            mime="application/pdf",
+            label="Download Final Analysis CSV",
+            data=analysis.to_csv(index=False).encode("utf-8"),
+            file_name="final_analysis.csv",
+            mime="text/csv",
             use_container_width=True
         )
 
-    except Exception as e:
-        st.error(f"PDF generation error: {e}")
+        st.download_button(
+            label="Download Oracle Quality Report",
+            data=oracle_report.to_csv(index=False).encode("utf-8"),
+            file_name="quality_report.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+
+        st.download_button(
+            label="Download Students CSV",
+            data=students.to_csv(index=False).encode("utf-8"),
+            file_name="students.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+
+    with col2:
+
+        st.download_button(
+            label="Download ML Anomaly Report",
+            data=ml_report.to_csv(index=False).encode("utf-8"),
+            file_name="ml_anomaly_report.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+
+        st.download_button(
+            label="Download Analysis Summary",
+            data=summary.to_csv(index=False).encode("utf-8"),
+            file_name="analysis_summary.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+
+        st.download_button(
+            label="Download Marks CSV",
+            data=marks.to_csv(index=False).encode("utf-8"),
+            file_name="marks.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+
+        st.download_button(
+            label="Download Attendance CSV",
+            data=attendance.to_csv(index=False).encode("utf-8"),
+            file_name="attendance.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+
+    st.divider()
+
+    st.markdown("### Complete PDF Report")
+
+    if st.button("Generate PDF Report"):
+
+        try:
+
+            pdf_file = create_pdf()
+
+            st.download_button(
+                label="Download Complete PDF Report",
+                data=pdf_file,
+                file_name="Database_Data_Quality_Report.pdf",
+                mime="application/pdf"
+            )
+
+            st.success("PDF report generated successfully.")
+
+        except Exception as e:
+
+            st.error(f"Unable to generate PDF: {e}")
 
 
-# --------------------------------------------------
-# ABOUT PROJECT
-# --------------------------------------------------
+# ==========================================
+# PAGE 6: ABOUT PROJECT
+# ==========================================
 
 elif page == "About Project":
 
-    st.header("About the Project")
-
-    st.subheader("AI-Based Database Data-Quality Analyzer")
-
-    st.write(
-        "This project automatically identifies suspicious "
-        "database records using SQL, PL/SQL and machine learning."
-    )
-
-    st.subheader("Technologies Used")
+    st.subheader("About the Project")
 
     st.markdown("""
-    - **Oracle Database:** Stores student, marks and attendance data.
-    - **SQL:** Detects missing values, duplicates and invalid records.
-    - **PL/SQL:** Automates data-quality analysis using a stored procedure.
-    - **Python:** Performs data preprocessing and analysis.
-    - **Pandas and NumPy:** Data manipulation.
-    - **Scikit-learn:** Isolation Forest anomaly detection.
-    - **Streamlit:** Interactive dashboard.
+    ### AI-Based Database Data-Quality Analyzer
+
+    This project analyzes student database records to identify
+    missing values, duplicate records, invalid marks, invalid
+    attendance, and unusual data patterns.
+
+    ### Technologies Used
+
+    - **Oracle Database:** Stores student, marks, and attendance data.
+    - **SQL:** Retrieves and validates database records.
+    - **PL/SQL:** Automatically detects predefined data-quality issues.
+    - **Python:** Processes exported CSV files.
+    - **Pandas and NumPy:** Data cleaning and analysis.
+    - **Scikit-learn:** Machine-learning anomaly detection.
+    - **Isolation Forest:** Identifies unusual records.
+    - **Streamlit:** Provides the interactive web dashboard.
+
+    ### Project Workflow
+
+    1. Student data is stored in Oracle Database.
+    2. SQL and PL/SQL identify predefined data-quality issues.
+    3. Oracle tables and reports are exported as CSV files.
+    4. Python processes the CSV files.
+    5. Isolation Forest detects unusual student records.
+    6. Results are displayed in this Streamlit dashboard.
+
+    ### Data Quality Checks
+
+    - Missing student information
+    - Duplicate student records
+    - Invalid marks
+    - Invalid attendance
+
+    ### Machine Learning
+
+    Isolation Forest is an unsupervised machine-learning algorithm.
+    It identifies records that differ significantly from the
+    overall data patterns.
+
+    ### Important Note
+
+    This dashboard uses CSV files exported from Oracle Database.
+    It does not connect directly to Oracle in real time.
+
+    To refresh the dashboard with updated data, export the latest
+    Oracle CSV files, rerun the Python analysis, and replace the
+    corresponding CSV files in the GitHub repository.
     """)
 
-    st.subheader("Machine Learning Algorithm")
+    st.divider()
 
-    st.write(
-        "Isolation Forest is an unsupervised machine-learning "
-        "algorithm used to identify unusual data patterns."
-    )
+    st.markdown("### Project Summary")
 
-    st.subheader("Project Dataset")
+    col1, col2, col3 = st.columns(3)
 
-    st.write(f"Total student records: {total_students}")
-
-    st.write(
-        "The dashboard displays the saved Colab analysis. "
-        "To refresh results after changing Oracle data, export "
-        "the CSV files again, rerun the Colab notebook, and "
-        "replace the corresponding GitHub files."
-    )
+    col1.metric("Students Analyzed", total_students)
+    col2.metric("Oracle Issues Found", oracle_issues)
+    col3.metric("ML Anomalies Found", ml_anomalies)
 
 
-# --------------------------------------------------
+# ==========================================
 # FOOTER
-# --------------------------------------------------
+# ==========================================
 
 st.divider()
 
-st.caption(
-    "AI-Based Database Data-Quality Analyzer | "
-    "DBMS Lab Project | Oracle + Python + Machine Learning"
+st.markdown(
+    """
+    <div style="text-align:center; color:#718096; padding:10px;">
+        <p><b>AI-Based Database Data-Quality Analyzer</b></p>
+        <p>DBMS Lab Project | Oracle · Python · Machine Learning · Streamlit</p>
+    </div>
+    """,
+    unsafe_allow_html=True
 )
