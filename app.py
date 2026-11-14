@@ -489,60 +489,50 @@ if page == "Dashboard":
     st.subheader("Data Quality Overview")
 
     chart_col1, chart_col2 = st.columns(2)
+with chart_col1:
 
-    with chart_col1:
+    st.markdown("**Student Record Classification**")
 
-        st.markdown("**Student Record Classification**")
+    fig, ax = plt.subplots(figsize=(7, 4))
 
-        status_data = pd.DataFrame({
-            "Status": ["Critical", "Warning", "Normal"],
-            "Students": [
-                critical_records,
-                warning_records,
-                normal_records
-            ]
-        })
+    fig.patch.set_facecolor("#111827")
+    ax.set_facecolor("#1e293b")
 
-       fig, ax = plt.subplots(figsize=(7, 4))
+    bars = ax.bar(
+        status_data["Status"],
+        status_data["Students"],
+        color=["#ef4444", "#f59e0b", "#22c55e"],
+        width=0.55
+    )
 
-fig.patch.set_facecolor("#111827")
-ax.set_facecolor("#1e293b")
-
-bars = ax.bar(
-    status_data["Status"],
-    status_data["Students"],
-    color=["#ef4444", "#f59e0b", "#22c55e"],
-    width=0.55
-)
-
-ax.set_ylabel("Number of Students", color="white")
-ax.set_title(
-    "Student Record Classification",
-    color="white",
-    fontsize=14,
-    fontweight="bold"
-)
-
-ax.tick_params(colors="white")
-ax.grid(axis="y", color="#475569", alpha=0.35)
-ax.set_axisbelow(True)
-
-for spine in ax.spines.values():
-    spine.set_color("#475569")
-
-for bar in bars:
-    ax.text(
-        bar.get_x() + bar.get_width() / 2,
-        bar.get_height(),
-        int(bar.get_height()),
-        ha="center",
-        va="bottom",
+    ax.set_ylabel("Number of Students", color="white")
+    ax.set_title(
+        "Student Record Classification",
         color="white",
+        fontsize=14,
         fontweight="bold"
     )
 
-st.pyplot(fig)
-plt.close(fig)
+    ax.tick_params(colors="white")
+    ax.grid(axis="y", color="#475569", alpha=0.35)
+    ax.set_axisbelow(True)
+
+    for spine in ax.spines.values():
+        spine.set_color("#475569")
+
+    for bar in bars:
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height(),
+            int(bar.get_height()),
+            ha="center",
+            va="bottom",
+            color="white",
+            fontweight="bold"
+        )
+
+    st.pyplot(fig)
+    plt.close(fig)
 
     with chart_col2:
 
