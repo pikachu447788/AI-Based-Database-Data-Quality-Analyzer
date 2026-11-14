@@ -162,7 +162,175 @@ oracle_issues = len(oracle_report)
 # --------------------------------------------------
 # DASHBOARD
 # --------------------------------------------------
+def create_pdf():
 
+    buffer = BytesIO()
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=landscape(A4),
+        rightMargin=30,
+        leftMargin=30,
+        topMargin=30,
+        bottomMargin=30
+    )
+
+    styles = getSampleStyleSheet()
+    elements = []
+
+    elements.append(Paragraph(
+        "AI-Based Database Data-Quality Analyzer",
+        styles["Title"]
+    ))
+
+    elements.append(Spacer(1, 12))
+
+    elements.append(Paragraph(
+        "Complete Project Analysis Report",
+        styles["Heading2"]
+    ))
+
+    elements.append(Paragraph(
+        "Generated on: " + datetime.now().strftime(
+            "%d-%m-%Y %H:%M"
+        ),
+        styles["Normal"]
+    ))
+
+    elements.append(Spacer(1, 15))
+
+    elements.append(Paragraph(
+        "1. Analysis Summary",
+        styles["Heading2"]
+    ))
+
+    summary_data = [
+        ["Metric", "Value"],
+        ["Total Students", total_students],
+        ["Oracle Quality Issues", oracle_issues],
+        ["Missing Emails", missing_emails],
+        ["Duplicate Records", duplicate_records],
+        ["Invalid Marks", invalid_marks],
+        ["Invalid Attendance", invalid_attendance],
+        ["ML Anomalies", ml_anomalies],
+        ["Critical Records", critical_records],
+        ["Warning Records", warning_records],
+        ["Normal Records", normal_records]
+    ]
+
+    summary_table = Table(
+        summary_data,
+        colWidths=[250, 120]
+    )
+
+    summary_table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#17365D")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+        ("PADDING", (0, 0), (-1, -1), 7),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1),
+         [colors.white, colors.HexColor("#EAF0F8")])
+    ]))
+
+    elements.append(summary_table)
+    elements.append(Spacer(1, 18))
+
+    elements.append(Paragraph(
+        "2. Student-Wise Analysis",
+        styles["Heading2"]
+    ))
+
+    student_data = [[
+        "ID", "Name", "Status", "Detected Issues", "ML Score"
+    ]]
+
+    for _, row in analysis.iterrows():
+
+        student_data.append([
+            str(row["STUDENT_ID"]),
+            str(row["NAME"]),
+            str(row["SUSPICIOUS_STATUS"]),
+            str(row["DETECTED_ISSUES"]),
+            str(round(row["ANOMALY_SCORE"], 5))
+        ])
+
+    student_table = Table(
+        student_data,
+        colWidths=[45, 85, 85, 330, 75],
+        repeatRows=1
+    )
+
+    student_table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#17365D")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
+        ("FONTSIZE", (0, 0), (-1, -1), 7),
+        ("PADDING", (0, 0), (-1, -1), 5),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1),
+         [colors.white, colors.HexColor("#EAF0F8")])
+    ]))
+
+    elements.append(student_table)
+    elements.append(Spacer(1, 18))
+
+    elements.append(Paragraph(
+        "3. Oracle Quality Report",
+        styles["Heading2"]
+    ))
+
+    oracle_data = [[
+        "Issue ID", "Student ID", "Issue Type", "Description"
+    ]]
+
+    for _, row in oracle_report.iterrows():
+
+        oracle_data.append([
+            str(row.get("ISSUE_ID", "")),
+            str(row.get("STUDENT_ID", "")),
+            str(row.get("ISSUE_TYPE", "")),
+            str(row.get("DESCRIPTION", ""))
+        ])
+
+    oracle_table = Table(
+        oracle_data,
+        colWidths=[65, 75, 140, 350],
+        repeatRows=1
+    )
+
+    oracle_table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#17365D")),
+        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+        ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
+        ("FONTSIZE", (0, 0), (-1, -1), 7),
+        ("PADDING", (0, 0), (-1, -1), 5),
+        ("VALIGN", (0, 0), (-1, -1), "TOP")
+    ]))
+
+    elements.append(oracle_table)
+
+    elements.append(Spacer(1, 18))
+
+    elements.append(Paragraph(
+        "4. Machine Learning Methodology",
+        styles["Heading2"]
+    ))
+
+    elements.append(Paragraph(
+        "Isolation Forest was used for unsupervised anomaly "
+        "detection. SQL and PL/SQL rules detect predefined "
+        "data-quality issues, while the ML model identifies "
+        "unusual combinations of student features. ML anomalies "
+        "should be investigated and are not automatically proof "
+        "of incorrect records.",
+        styles["Normal"]
+    ))
+
+    doc.build(elements)
+
+    buffer.seek(0)
+
+    return buffer.getvalue()
 if page == "Dashboard":
 
     st.header("Project Dashboard")
@@ -408,175 +576,7 @@ elif page == "Oracle Quality Report":
 # PDF REPORT GENERATION
 # --------------------------------------------------
 
-def create_pdf():
 
-    buffer = BytesIO()
-
-    doc = SimpleDocTemplate(
-        buffer,
-        pagesize=landscape(A4),
-        rightMargin=30,
-        leftMargin=30,
-        topMargin=30,
-        bottomMargin=30
-    )
-
-    styles = getSampleStyleSheet()
-    elements = []
-
-    elements.append(Paragraph(
-        "AI-Based Database Data-Quality Analyzer",
-        styles["Title"]
-    ))
-
-    elements.append(Spacer(1, 12))
-
-    elements.append(Paragraph(
-        "Complete Project Analysis Report",
-        styles["Heading2"]
-    ))
-
-    elements.append(Paragraph(
-        "Generated on: " + datetime.now().strftime(
-            "%d-%m-%Y %H:%M"
-        ),
-        styles["Normal"]
-    ))
-
-    elements.append(Spacer(1, 15))
-
-    elements.append(Paragraph(
-        "1. Analysis Summary",
-        styles["Heading2"]
-    ))
-
-    summary_data = [
-        ["Metric", "Value"],
-        ["Total Students", total_students],
-        ["Oracle Quality Issues", oracle_issues],
-        ["Missing Emails", missing_emails],
-        ["Duplicate Records", duplicate_records],
-        ["Invalid Marks", invalid_marks],
-        ["Invalid Attendance", invalid_attendance],
-        ["ML Anomalies", ml_anomalies],
-        ["Critical Records", critical_records],
-        ["Warning Records", warning_records],
-        ["Normal Records", normal_records]
-    ]
-
-    summary_table = Table(
-        summary_data,
-        colWidths=[250, 120]
-    )
-
-    summary_table.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#17365D")),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
-        ("PADDING", (0, 0), (-1, -1), 7),
-        ("ROWBACKGROUNDS", (0, 1), (-1, -1),
-         [colors.white, colors.HexColor("#EAF0F8")])
-    ]))
-
-    elements.append(summary_table)
-    elements.append(Spacer(1, 18))
-
-    elements.append(Paragraph(
-        "2. Student-Wise Analysis",
-        styles["Heading2"]
-    ))
-
-    student_data = [[
-        "ID", "Name", "Status", "Detected Issues", "ML Score"
-    ]]
-
-    for _, row in analysis.iterrows():
-
-        student_data.append([
-            str(row["STUDENT_ID"]),
-            str(row["NAME"]),
-            str(row["SUSPICIOUS_STATUS"]),
-            str(row["DETECTED_ISSUES"]),
-            str(round(row["ANOMALY_SCORE"], 5))
-        ])
-
-    student_table = Table(
-        student_data,
-        colWidths=[45, 85, 85, 330, 75],
-        repeatRows=1
-    )
-
-    student_table.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#17365D")),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-        ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
-        ("FONTSIZE", (0, 0), (-1, -1), 7),
-        ("PADDING", (0, 0), (-1, -1), 5),
-        ("VALIGN", (0, 0), (-1, -1), "TOP"),
-        ("ROWBACKGROUNDS", (0, 1), (-1, -1),
-         [colors.white, colors.HexColor("#EAF0F8")])
-    ]))
-
-    elements.append(student_table)
-    elements.append(Spacer(1, 18))
-
-    elements.append(Paragraph(
-        "3. Oracle Quality Report",
-        styles["Heading2"]
-    ))
-
-    oracle_data = [[
-        "Issue ID", "Student ID", "Issue Type", "Description"
-    ]]
-
-    for _, row in oracle_report.iterrows():
-
-        oracle_data.append([
-            str(row.get("ISSUE_ID", "")),
-            str(row.get("STUDENT_ID", "")),
-            str(row.get("ISSUE_TYPE", "")),
-            str(row.get("DESCRIPTION", ""))
-        ])
-
-    oracle_table = Table(
-        oracle_data,
-        colWidths=[65, 75, 140, 350],
-        repeatRows=1
-    )
-
-    oracle_table.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#17365D")),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-        ("GRID", (0, 0), (-1, -1), 0.4, colors.grey),
-        ("FONTSIZE", (0, 0), (-1, -1), 7),
-        ("PADDING", (0, 0), (-1, -1), 5),
-        ("VALIGN", (0, 0), (-1, -1), "TOP")
-    ]))
-
-    elements.append(oracle_table)
-
-    elements.append(Spacer(1, 18))
-
-    elements.append(Paragraph(
-        "4. Machine Learning Methodology",
-        styles["Heading2"]
-    ))
-
-    elements.append(Paragraph(
-        "Isolation Forest was used for unsupervised anomaly "
-        "detection. SQL and PL/SQL rules detect predefined "
-        "data-quality issues, while the ML model identifies "
-        "unusual combinations of student features. ML anomalies "
-        "should be investigated and are not automatically proof "
-        "of incorrect records.",
-        styles["Normal"]
-    ))
-
-    doc.build(elements)
-
-    buffer.seek(0)
-
-    return buffer.getvalue()
 
 
 # --------------------------------------------------
