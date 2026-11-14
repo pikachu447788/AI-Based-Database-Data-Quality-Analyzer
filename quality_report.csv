@@ -1,6 +1,0 @@
-"ISSUE_ID","STUDENT_ID","ISSUE_TYPE","DESCRIPTION","DETECTED_DATE"
-1,102,"MISSING VALUE","Student email address is missing","2026-11-14T10:30:08Z"
-2,101,"DUPLICATE","Duplicate student details detected","2026-11-14T10:30:08Z"
-3,104,"DUPLICATE","Duplicate student details detected","2026-11-14T10:30:08Z"
-4,103,"INVALID MARKS","Marks must be between 0 and 100","2026-11-14T10:30:08Z"
-5,105,"INVALID ATTENDANCE","Attended classes cannot exceed total classes","2026-11-14T10:30:08Z"
