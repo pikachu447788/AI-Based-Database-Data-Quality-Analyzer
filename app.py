@@ -24,25 +24,25 @@ st.set_page_config(
 st.markdown("""
 <style>
     :root {
-        --ink: #172033;
-        --muted: #64748b;
-        --line: #e5eaf2;
-        --surface: #ffffff;
-        --soft: #f5f7fb;
-        --accent: #3157a4;
+        --ink: #f1f5f9;
+        --muted: #94a3b8;
+        --line: #334155;
+        --surface: #1e293b;
+        --soft: #0f172a;
+        --accent: #60a5fa;
     }
 
     .stApp {
-        background: linear-gradient(180deg, #f7f9fd 0%, #ffffff 42%);
+        background: linear-gradient(180deg, #0b1120 0%, #111827 100%);
         color: var(--ink);
     }
 
     [data-testid="stHeader"] {
-        background: rgba(247, 249, 253, 0.88);
+        background: #0b1120;
     }
 
     [data-testid="stSidebar"] {
-        background: #101a2d;
+        background: #080f1d;
     }
 
     [data-testid="stSidebar"] * {
@@ -57,11 +57,11 @@ st.markdown("""
         padding: 1.35rem 1.55rem;
         border-radius: 18px;
         background: linear-gradient(
-            120deg, #142747 0%, #294f91 62%, #3b6bb5 100%
+            120deg, #172554 0%, #1e40af 62%, #2563eb 100%
         );
         color: white;
         margin: 0.25rem 0 1.35rem 0;
-        box-shadow: 0 12px 28px rgba(25, 48, 88, 0.14);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
     }
 
     .hero h1 {
@@ -72,39 +72,42 @@ st.markdown("""
     }
 
     .hero p {
-        color: #dce8ff !important;
+        color: #dbeafe !important;
         margin: 0;
         font-size: 0.98rem;
     }
 
     h1, h2, h3 {
+        color: #e2e8f0 !important;
         letter-spacing: -0.025em;
     }
 
-    h2 {
-        color: #172b4d;
+    p, label {
+        color: #e2e8f0;
     }
 
     [data-testid="stMetric"] {
-        background: white;
-        border: 1px solid var(--line);
+        background: #1e293b;
+        border: 1px solid #334155;
         border-radius: 14px;
         padding: 0.9rem 1rem;
-        box-shadow: 0 4px 14px rgba(24, 43, 77, 0.045);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
     }
 
     [data-testid="stMetricLabel"] {
-        color: #64748b;
+        color: #94a3b8 !important;
         font-weight: 600;
     }
 
     [data-testid="stMetricValue"] {
-        color: #172b4d;
+        color: #ffffff !important;
         font-weight: 750;
     }
 
-    [data-testid="stDataFrame"], [data-testid="stTable"] {
-        border: 1px solid var(--line);
+    [data-testid="stDataFrame"],
+    [data-testid="stTable"] {
+        background: #1e293b;
+        border: 1px solid #334155;
         border-radius: 12px;
         overflow: hidden;
     }
@@ -113,20 +116,23 @@ st.markdown("""
     div.stDownloadButton > button {
         border-radius: 10px;
         font-weight: 650;
-        border: 1px solid #cbd7eb;
+        background: #2563eb;
+        color: white;
+        border: 1px solid #3b82f6;
     }
 
-    div.stDownloadButton > button {
-        background: #f1f5fc;
-        color: #1f3f78;
+    div.stDownloadButton > button:hover,
+    div.stButton > button:hover {
+        background: #1d4ed8;
+        color: white;
     }
 
     hr {
-        border-color: var(--line);
+        border-color: #334155;
     }
 
     .section-note {
-        color: #64748b;
+        color: #94a3b8;
         margin-top: -0.45rem;
         margin-bottom: 1rem;
         font-size: 0.92rem;
@@ -145,7 +151,6 @@ st.markdown("""
     <p>Oracle Database · SQL / PL-SQL · Python · Isolation Forest</p>
 </div>
 """, unsafe_allow_html=True)
-
 
 # NAVIGATION
 st.sidebar.title("Navigation")
