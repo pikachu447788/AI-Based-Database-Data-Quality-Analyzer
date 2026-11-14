@@ -1,0 +1,10 @@
+METRIC,VALUE
+Total Students,30
+Missing Emails,3
+Duplicate Student Records,4
+Invalid Marks,4
+Invalid Attendance,4
+ML Anomalies,6
+Critical Records,8
+Warning Records,7
+Normal Records,15

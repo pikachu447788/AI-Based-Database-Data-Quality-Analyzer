@@ -1,0 +1,31 @@
+STUDENT_ID,NAME,EMAIL,PHONE,DUPLICATE_COUNT,IS_DUPLICATE,MISSING_EMAIL,MISSING_NAME,MISSING_PHONE,AVG_MARKS,INVALID_MARK_COUNT,TOTAL_SUBJECTS,TOTAL_CLASSES,ATTENDED_CLASSES,INVALID_ATTENDANCE_COUNT,ATTENDANCE_RATIO,ANOMALY_PREDICTION,ANOMALY_SCORE,ML_RESULT,SUSPICIOUS_STATUS,DETECTED_ISSUES
+101,Rahul,rahul@example.com,TEST-0001,2,1,0,0,0,85.0,0,1,100,90,0,0.9,1,0.03663158232302338,Normal,Warning,Duplicate Record
+102,Priya,,TEST-0002,1,0,1,0,0,90.0,0,1,100,85,0,0.85,1,0.015575469377245965,Normal,Warning,Missing Email
+103,Amit,amit@example.com,TEST-0003,1,0,0,0,0,120.0,1,1,100,80,0,0.8,-1,-0.009347726197292072,Anomaly,Critical,"Invalid Marks, ML Anomaly"
+104,Rahul,rahul@example.com,TEST-0001,2,1,0,0,0,75.0,0,1,100,95,0,0.95,-1,-0.03148156319803774,Anomaly,Warning,"Duplicate Record, ML Anomaly"
+105,Sneha,sneha@example.com,TEST-0004,1,0,0,0,0,88.0,0,1,100,110,1,1.1,1,0.004830767936404801,Normal,Critical,Invalid Attendance
+106,Karan,karan@example.com,TEST-0005,2,1,0,0,0,82.0,0,1,100,90,0,0.9,1,0.052412368590543656,Normal,Warning,Duplicate Record
+107,Karan,karan@example.com,TEST-0005,2,1,0,0,0,82.0,0,1,100,88,0,0.88,1,0.019205711028782435,Normal,Warning,Duplicate Record
+108,Ananya,,TEST-0006,1,0,1,0,0,76.0,0,1,100,85,0,0.85,1,0.002169678469804759,Normal,Warning,Missing Email
+109,Rohan,,TEST-0007,1,0,1,0,0,88.0,0,1,100,92,0,0.92,1,0.0028885022881498523,Normal,Warning,Missing Email
+110,Meera,meera@example.com,TEST-0008,1,0,0,0,0,105.0,1,1,100,90,0,0.9,1,0.01284770343856556,Normal,Critical,Invalid Marks
+111,Arjun,arjun@example.com,TEST-0009,1,0,0,0,0,-5.0,1,1,100,80,0,0.8,-1,-0.09808380273486361,Anomaly,Critical,"Invalid Marks, ML Anomaly"
+112,Kavya,kavya@example.com,TEST-0010,1,0,0,0,0,130.0,1,1,100,95,0,0.95,-1,-0.04783417741989904,Anomaly,Critical,"Invalid Marks, ML Anomaly"
+113,Dev,dev@example.com,TEST-0011,1,0,0,0,0,91.0,0,1,100,110,1,1.1,-1,-0.008678713879219258,Anomaly,Critical,"Invalid Attendance, ML Anomaly"
+114,Ishita,ishita@example.com,TEST-0012,1,0,0,0,0,79.0,0,1,100,-2,1,-0.02,-1,-0.13374090181023235,Anomaly,Critical,"Invalid Attendance, ML Anomaly"
+115,Nikhil,nikhil@example.com,TEST-0013,1,0,0,0,0,85.0,0,1,0,5,1,,1,0.03596602009680211,Normal,Critical,Invalid Attendance
+116,Aarav,aarav@example.com,TEST-0014,1,0,0,0,0,92.0,0,1,100,91,0,0.91,1,0.1663723509280321,Normal,Normal,No issues detected
+117,Diya,diya@example.com,TEST-0015,1,0,0,0,0,81.0,0,1,100,87,0,0.87,1,0.17776693500520147,Normal,Normal,No issues detected
+118,Kabir,kabir@example.com,TEST-0016,1,0,0,0,0,74.0,0,1,100,78,0,0.78,1,0.11104148581883255,Normal,Normal,No issues detected
+119,Sanya,sanya@example.com,TEST-0017,1,0,0,0,0,89.0,0,1,100,94,0,0.94,1,0.17154013678195057,Normal,Normal,No issues detected
+120,Aditya,aditya@example.com,TEST-0018,1,0,0,0,0,95.0,0,1,100,89,0,0.89,1,0.15291420855544835,Normal,Normal,No issues detected
+121,Myra,myra@example.com,TEST-0019,1,0,0,0,0,77.0,0,1,100,82,0,0.82,1,0.15822867065193957,Normal,Normal,No issues detected
+122,Vivaan,vivaan@example.com,TEST-0020,1,0,0,0,0,86.0,0,1,100,90,0,0.9,1,0.18512187080989156,Normal,Normal,No issues detected
+123,Tara,tara@example.com,TEST-0021,1,0,0,0,0,90.0,0,1,100,86,0,0.86,1,0.17251398243557392,Normal,Normal,No issues detected
+124,Ishaan,ishaan@example.com,TEST-0022,1,0,0,0,0,83.0,0,1,100,93,0,0.93,1,0.17611576995342137,Normal,Normal,No issues detected
+125,Aisha,aisha@example.com,TEST-0023,1,0,0,0,0,72.0,0,1,100,84,0,0.84,1,0.13814378063403265,Normal,Normal,No issues detected
+126,Reyansh,reyansh@example.com,TEST-0024,1,0,0,0,0,94.0,0,1,100,96,0,0.96,1,0.15288138046433308,Normal,Normal,No issues detected
+127,Kiara,kiara@example.com,TEST-0025,1,0,0,0,0,87.0,0,1,100,88,0,0.88,1,0.1798651744727136,Normal,Normal,No issues detected
+128,Dhruv,dhruv@example.com,TEST-0026,1,0,0,0,0,80.0,0,1,100,81,0,0.81,1,0.15849359307043953,Normal,Normal,No issues detected
+129,Riya,riya@example.com,TEST-0027,1,0,0,0,0,96.0,0,1,100,95,0,0.95,1,0.14077229224709303,Normal,Normal,No issues detected
+130,Yash,yash@example.com,TEST-0028,1,0,0,0,0,84.0,0,1,100,90,0,0.9,1,0.1841214727106782,Normal,Normal,No issues detected
