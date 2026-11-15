@@ -145,12 +145,36 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
+# GRAPH STYLING
+def style_chart(fig, ax):
+    """Apply a consistent dark chart style."""
+    fig.patch.set_facecolor("#111827")
+    ax.set_facecolor("#172554")
+    ax.tick_params(colors="#dbeafe", labelsize=9)
+    ax.xaxis.label.set_color("#cbd5e1")
+    ax.yaxis.label.set_color("#cbd5e1")
+    ax.title.set_color("#f8fafc")
+
+    for spine in ax.spines.values():
+        spine.set_color("#475569")
+
+    ax.grid(
+        color="#64748b",
+        alpha=0.25,
+        linestyle="--",
+        linewidth=0.7
+    )
+    ax.set_axisbelow(True)
+
+
+# PROJECT HEADER
 st.markdown("""
 <div class="hero">
     <h1>AI-Based Database Data-Quality Analyzer</h1>
-    <p>Oracle Database · SQL / PL-SQL · Python · Isolation Forest</p>
+    <p>Intelligent detection of database errors, inconsistencies and unusual records.</p>
 </div>
 """, unsafe_allow_html=True)
+
 
 # NAVIGATION
 st.sidebar.title("Navigation")
@@ -161,7 +185,7 @@ page = st.sidebar.radio(
         "Dashboard",
         "Student Analysis",
         "ML Anomaly Detection",
-        "Oracle Quality Report",
+        "Quality Report",
         "Download Reports",
         "About Project"
     ]
@@ -324,7 +348,7 @@ def create_pdf():
     summary_data = [
         ["Metric", "Value"],
         ["Total Students", total_students],
-        ["Oracle Quality Issues", oracle_issues],
+        ["Issues Detected in Database", oracle_issues],
         ["Missing Emails", missing_emails],
         ["Duplicate Records", duplicate_records],
         ["Invalid Marks", invalid_marks],
@@ -388,7 +412,7 @@ def create_pdf():
     elements.append(Spacer(1, 18))
 
     elements.append(Paragraph(
-        "3. Oracle Quality Report",
+        "3. Database Quality Report",
         styles["Heading2"]
     ))
 
@@ -441,7 +465,8 @@ def create_pdf():
     buffer.seek(0)
 
     return buffer.getvalue()
-    
+
+
 # ==========================================
 # PAGE 1: DASHBOARD
 # ==========================================
@@ -460,7 +485,7 @@ if page == "Dashboard":
     col1, col2, col3, col4 = st.columns(4)
 
     col1.metric("Total Students", total_students)
-    col2.metric("Oracle Issues", oracle_issues)
+    col2.metric("Issues Detected in Database", oracle_issues)
     col3.metric("ML Anomalies", ml_anomalies)
     col4.metric("Critical Records", critical_records)
 
@@ -507,12 +532,20 @@ if page == "Dashboard":
 
         ax.bar(
             status_data["Status"],
-            status_data["Students"]
+            status_data["Students"],
+            color=["#fb7185", "#fbbf24", "#34d399"],
+            width=0.62,
+            edgecolor="#e2e8f0",
+            linewidth=0.7
         )
 
         ax.set_ylabel("Number of Students")
-        ax.set_title("Classification of Student Records")
-        ax.grid(axis="y", alpha=0.25)
+        ax.set_title(
+            "Classification of Student Records",
+            pad=12,
+            fontweight="bold"
+        )
+        style_chart(fig, ax)
 
         st.pyplot(fig)
         plt.close(fig)
@@ -540,12 +573,20 @@ if page == "Dashboard":
 
         ax.barh(
             issue_data["Issue"],
-            issue_data["Count"]
+            issue_data["Count"],
+            color=["#60a5fa", "#a78bfa", "#fbbf24", "#fb7185"],
+            height=0.58,
+            edgecolor="#e2e8f0",
+            linewidth=0.6
         )
 
         ax.set_xlabel("Number of Issues")
-        ax.set_title("Oracle Data Quality Checks")
-        ax.grid(axis="x", alpha=0.25)
+        ax.set_title(
+            "Database Data Quality Checks",
+            pad=12,
+            fontweight="bold"
+        )
+        style_chart(fig, ax)
 
         st.pyplot(fig)
         plt.close(fig)
@@ -648,8 +689,13 @@ elif page == "Student Analysis":
         if col in filtered_data.columns
     ]
 
+    email_column_config = {}
+    if "EMAIL" in display_columns:
+        email_column_config["EMAIL"] = st.column_config.TextColumn("Email")
+
     st.dataframe(
         filtered_data[display_columns],
+        column_config=email_column_config,
         use_container_width=True,
         hide_index=True
     )
@@ -724,7 +770,8 @@ elif page == "Student Analysis":
     else:
 
         st.info("No student records match your search or filter.")
-        
+
+
 # ==========================================
 # PAGE 3: ML ANOMALY DETECTION
 # ==========================================
@@ -801,9 +848,18 @@ elif page == "ML Anomaly Detection":
 
         fig, ax = plt.subplots(figsize=(11, 5))
 
+        score_colors = [
+            "#fb7185" if score < 0 else "#60a5fa"
+            for score in score_data["ANOMALY_SCORE"]
+        ]
+
         ax.bar(
             score_data["STUDENT_ID"].astype(str),
-            score_data["ANOMALY_SCORE"]
+            score_data["ANOMALY_SCORE"],
+            color=score_colors,
+            width=0.72,
+            edgecolor="#e2e8f0",
+            linewidth=0.35
         )
 
         ax.axhline(
@@ -814,9 +870,13 @@ elif page == "ML Anomaly Detection":
 
         ax.set_xlabel("Student ID")
         ax.set_ylabel("Anomaly Score")
-        ax.set_title("Isolation Forest Anomaly Scores")
+        ax.set_title(
+            "Isolation Forest Anomaly Scores",
+            pad=12,
+            fontweight="bold"
+        )
         ax.tick_params(axis="x", rotation=45)
-        ax.grid(axis="y", alpha=0.25)
+        style_chart(fig, ax)
 
         st.pyplot(fig)
         plt.close(fig)
@@ -829,12 +889,12 @@ elif page == "ML Anomaly Detection":
 
 
 # ==========================================
-# PAGE 4: ORACLE QUALITY REPORT
+# PAGE 4: QUALITY REPORT
 # ==========================================
 
-elif page == "Oracle Quality Report":
+elif page == "Quality Report":
 
-    st.subheader("Oracle Database Quality Report")
+    st.subheader("Database Quality Report")
 
     st.markdown(
         '<p class="section-note">Issues detected using SQL and '
@@ -842,7 +902,7 @@ elif page == "Oracle Quality Report":
         unsafe_allow_html=True
     )
 
-    st.metric("Total Oracle Issues", oracle_issues)
+    st.metric("Issues Detected in Database", oracle_issues)
 
     st.divider()
 
@@ -875,20 +935,28 @@ elif page == "Oracle Quality Report":
 
             ax.bar(
                 issue_counts["Issue Type"],
-                issue_counts["Count"]
+                issue_counts["Count"],
+                color=["#60a5fa", "#a78bfa", "#34d399", "#fbbf24", "#fb7185"],
+                width=0.62,
+                edgecolor="#e2e8f0",
+                linewidth=0.6
             )
 
             ax.set_ylabel("Number of Issues")
-            ax.set_title("Oracle Issue Distribution")
+            ax.set_title(
+                "Database Issue Distribution",
+                pad=12,
+                fontweight="bold"
+            )
             ax.tick_params(axis="x", rotation=30)
-            ax.grid(axis="y", alpha=0.25)
+            style_chart(fig, ax)
 
             st.pyplot(fig)
             plt.close(fig)
 
     st.divider()
 
-    st.markdown("### Complete Oracle Quality Report")
+    st.markdown("### Complete Quality Report")
 
     st.dataframe(
         oracle_report,
@@ -903,100 +971,27 @@ elif page == "Oracle Quality Report":
 
 elif page == "Download Reports":
 
-    st.subheader("Download Project Reports")
+    st.subheader("Download Analysis Report")
 
     st.markdown(
-        '<p class="section-note">Download the analysis results '
-        'and generated project report.</p>',
+        '<p class="section-note">Download a PDF containing the '
+        'database quality findings, student-wise analysis, and ML results.</p>',
         unsafe_allow_html=True
     )
 
-    st.markdown("### CSV Reports")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
+    try:
+        pdf_file = create_pdf()
 
         st.download_button(
-            label="Download Final Analysis CSV",
-            data=analysis.to_csv(index=False).encode("utf-8"),
-            file_name="final_analysis.csv",
-            mime="text/csv",
+            label="Download PDF Analysis Report",
+            data=pdf_file,
+            file_name="Database_Data_Quality_Analysis_Report.pdf",
+            mime="application/pdf",
             use_container_width=True
         )
 
-        st.download_button(
-            label="Download Oracle Quality Report",
-            data=oracle_report.to_csv(index=False).encode("utf-8"),
-            file_name="quality_report.csv",
-            mime="text/csv",
-            use_container_width=True
-        )
-
-        st.download_button(
-            label="Download Students CSV",
-            data=students.to_csv(index=False).encode("utf-8"),
-            file_name="students.csv",
-            mime="text/csv",
-            use_container_width=True
-        )
-
-    with col2:
-
-        st.download_button(
-            label="Download ML Anomaly Report",
-            data=ml_report.to_csv(index=False).encode("utf-8"),
-            file_name="ml_anomaly_report.csv",
-            mime="text/csv",
-            use_container_width=True
-        )
-
-        st.download_button(
-            label="Download Analysis Summary",
-            data=summary.to_csv(index=False).encode("utf-8"),
-            file_name="analysis_summary.csv",
-            mime="text/csv",
-            use_container_width=True
-        )
-
-        st.download_button(
-            label="Download Marks CSV",
-            data=marks.to_csv(index=False).encode("utf-8"),
-            file_name="marks.csv",
-            mime="text/csv",
-            use_container_width=True
-        )
-
-        st.download_button(
-            label="Download Attendance CSV",
-            data=attendance.to_csv(index=False).encode("utf-8"),
-            file_name="attendance.csv",
-            mime="text/csv",
-            use_container_width=True
-        )
-
-    st.divider()
-
-    st.markdown("### Complete PDF Report")
-
-    if st.button("Generate PDF Report"):
-
-        try:
-
-            pdf_file = create_pdf()
-
-            st.download_button(
-                label="Download Complete PDF Report",
-                data=pdf_file,
-                file_name="Database_Data_Quality_Report.pdf",
-                mime="application/pdf"
-            )
-
-            st.success("PDF report generated successfully.")
-
-        except Exception as e:
-
-            st.error(f"Unable to generate PDF: {e}")
+    except Exception as e:
+        st.error(f"Unable to generate PDF report: {e}")
 
 
 # ==========================================
@@ -1008,64 +1003,27 @@ elif page == "About Project":
     st.subheader("About the Project")
 
     st.markdown("""
-    ### AI-Based Database Data-Quality Analyzer
+    **AI-Based Database Data-Quality Analyzer** checks student
+    database records for missing values, duplicates, invalid marks,
+    and invalid attendance.
 
-    This project analyzes student database records to identify
-    missing values, duplicate records, invalid marks, invalid
-    attendance, and unusual data patterns.
+    SQL and PL/SQL identify predefined data-quality issues, while
+    the Isolation Forest machine-learning model highlights unusual
+    record patterns for further investigation.
 
-    ### Technologies Used
+    **Workflow:** Oracle Database → CSV Export → Python Analysis →
+    Machine Learning → Streamlit Dashboard
 
-    - **Oracle Database:** Stores student, marks, and attendance data.
-    - **SQL:** Retrieves and validates database records.
-    - **PL/SQL:** Automatically detects predefined data-quality issues.
-    - **Python:** Processes exported CSV files.
-    - **Pandas and NumPy:** Data cleaning and analysis.
-    - **Scikit-learn:** Machine-learning anomaly detection.
-    - **Isolation Forest:** Identifies unusual records.
-    - **Streamlit:** Provides the interactive web dashboard.
-
-    ### Project Workflow
-
-    1. Student data is stored in Oracle Database.
-    2. SQL and PL/SQL identify predefined data-quality issues.
-    3. Oracle tables and reports are exported as CSV files.
-    4. Python processes the CSV files.
-    5. Isolation Forest detects unusual student records.
-    6. Results are displayed in this Streamlit dashboard.
-
-    ### Data Quality Checks
-
-    - Missing student information
-    - Duplicate student records
-    - Invalid marks
-    - Invalid attendance
-
-    ### Machine Learning
-
-    Isolation Forest is an unsupervised machine-learning algorithm.
-    It identifies records that differ significantly from the
-    overall data patterns.
-
-    ### Important Note
-
-    This dashboard uses CSV files exported from Oracle Database.
-    It does not connect directly to Oracle in real time.
-
-    To refresh the dashboard with updated data, export the latest
-    Oracle CSV files, rerun the Python analysis, and replace the
-    corresponding CSV files in the GitHub repository.
+    *The dashboard analyzes exported CSV data and does not connect
+    directly to Oracle in real time.*
     """)
 
     st.divider()
 
-    st.markdown("### Project Summary")
-
     col1, col2, col3 = st.columns(3)
-
     col1.metric("Students Analyzed", total_students)
-    col2.metric("Oracle Issues Found", oracle_issues)
-    col3.metric("ML Anomalies Found", ml_anomalies)
+    col2.metric("Issues Detected in Database", oracle_issues)
+    col3.metric("ML Anomalies", ml_anomalies)
 
 
 # ==========================================
@@ -1078,7 +1036,7 @@ st.markdown(
     """
     <div style="text-align:center; color:#718096; padding:10px;">
         <p><b>AI-Based Database Data-Quality Analyzer</b></p>
-        <p>DBMS Lab Project | Oracle · Python · Machine Learning · Streamlit</p>
+        <p>DBMS Lab Project</p>
     </div>
     """,
     unsafe_allow_html=True
