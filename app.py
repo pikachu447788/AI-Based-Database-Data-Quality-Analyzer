@@ -438,7 +438,7 @@ if page == "About Project":
     st.markdown("### Current Dataset Summary")
     c1, c2, c3 = st.columns(3)
     c1.metric("Students Analyzed", total_students)
-        c2.metric("Database Issues", database_issues)
+    c2.metric("Database Issues", database_issues)
     c3.metric("ML Anomalies", ml_anomalies)
 
 
